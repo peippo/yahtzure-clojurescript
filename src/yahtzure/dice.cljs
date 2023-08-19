@@ -1,11 +1,8 @@
 (ns yahtzure.dice
-  (:require [reagent.core :as r]))
+  (:require [yahtzure.state :refer [state]]))
 
 (defn roll-die [] (inc (rand-int 6)))
 (defn roll-dice [count] (repeatedly count roll-die))
-
-(defonce state (r/atom {:table-dice [nil nil nil nil nil]
-                        :held-dice [nil nil nil nil nil]}))
 
 (defn hold-die
   "Move selected die from table to the held state"
@@ -25,7 +22,7 @@
              {:table-dice (assoc (:table-dice state) index die-value)
               :held-dice  (assoc (:held-dice state) index nil)}))))
 
-(defn roll-table-dice
+(defn roll-table-dice!
   "Roll 5 dice if the table is empty, otherwise reroll table dice"
   [old-state]
   (let [held-count (count (filter some? (:held-dice old-state)))
@@ -61,4 +58,4 @@
 (defn throw-button []
   [:input {:type "button"
            :value "Throw"
-           :on-click #(swap! state roll-table-dice)}])
+           :on-click #(swap! state roll-table-dice!)}])
