@@ -9,6 +9,16 @@
   ([] (reduce + (all-dice)))
   ([value] (reduce + (filter #(= value %) (all-dice)))))
 
+(defn full-house?
+  "Check if we have three of a kind and a pair"
+  []
+  (let [grouped-by-value (->> (all-dice)
+                              (sort)
+                              (partition-by identity)
+                              (sort-by count))]
+    (and (= 2 (count (first grouped-by-value)))
+         (= 3 (count (last grouped-by-value))))))
+
 (defn small-straight?
   "Check if we have four sequential dice"
   []
@@ -30,6 +40,7 @@
    [:p (str "fours:" (sum-dice 4))]
    [:p (str "fives:" (sum-dice 5))]
    [:p (str "sixes:" (sum-dice 6))]
+   [:p (str "full house:" (if (full-house?) 25 0))]
    [:p (str "small straight:" (if (small-straight?) 30 0))]
    [:p (str "large straight:" (if (large-straight?) 40 0))]
    [:p (str "chance:" (sum-dice))]])
