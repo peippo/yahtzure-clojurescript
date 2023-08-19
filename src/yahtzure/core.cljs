@@ -1,18 +1,24 @@
 (ns yahtzure.core
-    (:require
-     [reagent.core :as r]
-     [reagent.dom :as d]
-     [yahtzure.dice :as dice]))
+  (:require
+   [reagent.dom :as d]
+   [yahtzure.dice :as dice]
+   [yahtzure.score :as score]))
 
 ;; -------------------------
 ;; Views
 
 (defn home-page []
-  [:div 
+  [:div
    [:h1 "Yahtzure"]
    [dice/throw-button]
-   [dice/table-dice]
-   [dice/held-dice]])
+   [:div {:style {:display "flex" :gap "2rem"}}
+    [:div [:p>strong "Table"]
+     [dice/table-dice]
+     [:p>strong "Hold"]
+     [dice/held-dice]]
+    [:div
+     [:p>strong "Scores"]
+     [score/score-table]]]])
 
 ;; -------------------------
 ;; Initialize app
