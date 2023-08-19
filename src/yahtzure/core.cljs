@@ -10,7 +10,9 @@
 (defn home-page []
   [:div 
    [:h1 "Yahtzure"]
-   [dice/dice-area]])
+   [dice/throw-button]
+   [dice/table-dice]
+   [dice/held-dice]])
 
 ;; -------------------------
 ;; Initialize app
