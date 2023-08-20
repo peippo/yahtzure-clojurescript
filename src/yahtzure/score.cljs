@@ -1,6 +1,20 @@
 (ns yahtzure.score
   (:require [yahtzure.state :refer [state]]))
 
+(def names {:aces "Aces"
+            :twos "Twos"
+            :threes "Threes"
+            :fours "Fours"
+            :fives "Fives"
+            :sixes "Sixes"
+            :three-of-a-kind "Three-of-a-kind"
+            :four-of-a-kind "Four-of-a-kind"
+            :full-house "Full house"
+            :small-straight "Small straight"
+            :large-straight "Large straight"
+            :yahtzee "Yahtzee!"
+            :chance "Chance"})
+
 (defn all-dice []
   (filter some? (concat (:table-dice @state) (:held-dice @state))))
 
@@ -54,17 +68,30 @@
         partitions (partition 5 1 (->> (all-dice) sort dedupe))]
     (some #(some (partial = %) partitions) straights)))
 
+(defn lock-score [name score]
+  (swap! state assoc-in [:scores name] {:score score :locked true}))
+
+(defn score-row [name data calculated-score]
+  (let [{:keys [score locked]} data]
+    [:div
+     [:p (get names name)
+      (if (true? locked)
+        [:button {:disabled true} (str score)]
+        [:button {:on-click #(lock-score name calculated-score)} calculated-score])]]))
+
 (defn score-table []
-  [:div [:p (str "aces: " (sum-dice 1))]
-   [:p (str "twos: " (sum-dice 2))]
-   [:p (str "threes: " (sum-dice 3))]
-   [:p (str "fours: " (sum-dice 4))]
-   [:p (str "fives: " (sum-dice 5))]
-   [:p (str "sixes: " (sum-dice 6))]
-   [:p (str "three-of-a-kind: " (if (three-of-a-kind?) (sum-dice) 0))]
-   [:p (str "four-of-a-kind: " (if (four-of-a-kind?) (sum-dice) 0))]
-   [:p (str "yahtzee! : " (if (yahtzee?) 50 0))]
-   [:p (str "full house: " (if (full-house?) 25 0))]
-   [:p (str "small straight: " (if (small-straight?) 30 0))]
-   [:p (str "large straight: " (if (large-straight?) 40 0))]
-   [:p (str "chance: " (sum-dice))]])
+  (let [score-state (:scores @state)]
+    [:div
+     [score-row :aces (:aces score-state) (sum-dice 1)]
+     [score-row :twos (:twos score-state) (sum-dice 2)]
+     [score-row :threes (:threes score-state) (sum-dice 3)]
+     [score-row :fours (:fours score-state) (sum-dice 4)]
+     [score-row :fives (:fives score-state) (sum-dice 5)]
+     [score-row :sixes (:sixes score-state) (sum-dice 6)]
+     [score-row :three-of-a-kind (:three-of-a-kind score-state) (if (three-of-a-kind?) (sum-dice) 0)]
+     [score-row :four-of-a-kind (:four-of-a-kind score-state) (if (four-of-a-kind?) (sum-dice) 0)]
+     [score-row :full-house (:full-house score-state) (if (full-house?) 25 0)]
+     [score-row :small-straight (:small-straight score-state) (if (small-straight?) 30 0)]
+     [score-row :large-straight (:large-straight score-state) (if (large-straight?) 40 0)]
+     [score-row :yahtzee (:yahtzee score-state) (if (yahtzee?) 50 0)]
+     [score-row :chance (:chance score-state) (sum-dice)]]))

@@ -10,8 +10,9 @@
   (let [die-value (nth (:table-dice @state) index)]
     (swap! state
            (fn [state]
-             {:table-dice (assoc (:table-dice state) index nil)
-              :held-dice  (assoc (:held-dice state) index die-value)}))))
+             (-> state
+                 (update :table-dice assoc index nil)
+                 (update :held-dice assoc index die-value))))))
 
 (defn return-die
   "Return selected die from held state to the table"
@@ -19,8 +20,9 @@
   (let [die-value (nth (:held-dice @state) index)]
     (swap! state
            (fn [state]
-             {:table-dice (assoc (:table-dice state) index die-value)
-              :held-dice  (assoc (:held-dice state) index nil)}))))
+             (-> state
+                 (update :table-dice assoc index die-value)
+                 (update :held-dice assoc index nil))))))
 
 (defn roll-table-dice!
   "Roll 5 dice if the table is empty, otherwise reroll table dice"
