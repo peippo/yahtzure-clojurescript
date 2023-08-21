@@ -1,5 +1,6 @@
 (ns yahtzure.dice
-  (:require [yahtzure.state :refer [state]]))
+  (:require [yahtzure.state :refer [state]]
+            [yahtzure.game :as game]))
 
 (defn roll-die [] (inc (rand-int 6)))
 (defn roll-dice [count] (repeatedly count roll-die))
@@ -24,7 +25,7 @@
                  (update :table-dice assoc index die-value)
                  (update :held-dice assoc index nil))))))
 
-(defn roll-table-dice!
+(defn roll-dice!
   "Roll 5 dice if the table is empty, otherwise reroll table dice"
   [old-state]
   (let [held-count (count (filter some? (:held-dice old-state)))
@@ -57,7 +58,10 @@
        [:li
         [:button {:on-click #(return-die index)} (str value)]]))])
 
-(defn throw-button []
-  [:input {:type "button"
-           :value "Throw"
-           :on-click #(swap! state roll-table-dice!)}])
+(defn roll-button []
+  (let [held-count (count (filter some? (:held-dice @state)))]
+    [:input {:type "button"
+             :value (if (= 3 (:rolls @state)) "Roll" "Re-roll")
+             :disabled (or (= 5 held-count) (= 0 (:rolls @state)))
+             :on-click #(do ((swap! state roll-dice!)
+                             (game/dec-roll)))}]))

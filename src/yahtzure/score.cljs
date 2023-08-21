@@ -1,5 +1,6 @@
 (ns yahtzure.score
-  (:require [yahtzure.state :refer [state]]))
+  (:require [yahtzure.state :refer [state]]
+            [yahtzure.game :as game]))
 
 (def names {:aces "Aces"
             :twos "Twos"
@@ -69,7 +70,8 @@
     (some #(some (partial = %) partitions) straights)))
 
 (defn lock-score [name score]
-  (swap! state assoc-in [:scores name] {:score score :locked true}))
+  (swap! state assoc-in [:scores name] {:score score :locked true})
+  (game/next-round))
 
 (defn score-row [name data calculated-score]
   (let [{:keys [score locked]} data]

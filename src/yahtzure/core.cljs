@@ -2,7 +2,8 @@
   (:require
    [reagent.dom :as d]
    [yahtzure.dice :as dice]
-   [yahtzure.score :as score]))
+   [yahtzure.score :as score]
+   [yahtzure.game :as game]))
 
 ;; -------------------------
 ;; Views
@@ -10,7 +11,9 @@
 (defn home-page []
   [:div
    [:h1 "Yahtzure"]
-   [dice/throw-button]
+   [game/round-counter]
+   [game/roll-counter]
+   [dice/roll-button]
    [:div {:style {:display "flex" :gap "2rem"}}
     [:div [:p>strong "Table"]
      [dice/table-dice]

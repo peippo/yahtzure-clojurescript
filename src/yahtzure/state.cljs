@@ -1,7 +1,9 @@
 (ns yahtzure.state
   (:require [reagent.core :as r]))
 
-(defonce state (r/atom {:table-dice [nil nil nil nil nil]
+(defonce state (r/atom {:round 1
+                        :rolls 3
+                        :table-dice [nil nil nil nil nil]
                         :held-dice [nil nil nil nil nil]
                         :scores {:aces {:score 0 :locked false}
                                  :twos {:score 0 :locked false}
