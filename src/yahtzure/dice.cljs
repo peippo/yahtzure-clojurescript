@@ -42,26 +42,36 @@
      old-state
      (map vector dice-indices rolls))))
 
+;; -------------------------
+;; UI elements
+
+(def dice-classes "w-full h-full aspect-square bg-slate-300 text-slate-900 hover:bg-slate-200 text-4xl rounded")
+(def dice-slot-classes "w-full h-full aspect-square border-2 border-dashed border-emerald-800 rounded-md p-2")
+
 (defn table-dice []
-  [:ul
+  [:ul {:class "grid grid-cols-5 gap-2"}
    (for [[index value] (map-indexed vector (:table-dice @state))]
-     (when (not (nil? value))
-       ^{:key (str index "-" value)}
-       [:li
-        [:button {:on-click #(hold-die index)} (str value)]]))])
+     ^{:key (str index "-" (or value "nil"))}
+     [:li {:class dice-slot-classes}
+      (when (not (nil? value))
+        [:button {:class dice-classes :on-click #(hold-die index)} (str value)])])])
 
 (defn held-dice []
-  [:ul
+  [:ul {:class "grid grid-cols-5 gap-2"}
    (for [[index value] (map-indexed vector (:held-dice @state))]
-     (when (not (nil? value))
-       ^{:key (str index "-" value)}
-       [:li
-        [:button {:on-click #(return-die index)} (str value)]]))])
+     ^{:key (str index "-" (or value "nil"))}
+     [:li {:class dice-slot-classes}
+      (when (not (nil? value))
+        [:button {:class dice-classes :on-click #(return-die index)} (str value)])])])
 
 (defn roll-button []
-  (let [held-count (count (filter some? (:held-dice @state)))]
+  (let [held-count (count (filter some? (:held-dice @state)))
+        disabled (or (= 5 held-count) (= 0 (:rolls @state)))]
     [:input {:type "button"
-             :value (if (= 3 (:rolls @state)) "Roll" "Re-roll")
-             :disabled (or (= 5 held-count) (= 0 (:rolls @state)))
+             :class (str (if disabled
+                           "bg-slate-600 text-slate-800 hover:cursor-not-allowed p-3"
+                           "bg-emerald-500 text-slate-900 hover:bg-emerald-300 hover:cursor-pointer p-3"))
+             :value (if (= 3 (:rolls @state)) "Roll" (str "Re-roll (" (:rolls @state) ")"))
+             :disabled disabled
              :on-click #(do ((swap! state roll-dice!)
                              (game/dec-roll)))}]))

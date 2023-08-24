@@ -2,19 +2,19 @@
   (:require [yahtzure.state :refer [state]]
             [yahtzure.game :as game]))
 
-(def names {:aces "Aces"
-            :twos "Twos"
-            :threes "Threes"
-            :fours "Fours"
-            :fives "Fives"
-            :sixes "Sixes"
-            :three-of-a-kind "Three-of-a-kind"
-            :four-of-a-kind "Four-of-a-kind"
-            :full-house "Full house"
-            :small-straight "Small straight"
-            :large-straight "Large straight"
-            :yahtzee "Yahtzee!"
-            :chance "Chance"})
+(def combinations {:aces "Aces"
+                   :twos "Twos"
+                   :threes "Threes"
+                   :fours "Fours"
+                   :fives "Fives"
+                   :sixes "Sixes"
+                   :three-of-a-kind "Three-of-a-kind"
+                   :four-of-a-kind "Four-of-a-kind"
+                   :full-house "Full house"
+                   :small-straight "Small straight"
+                   :large-straight "Large straight"
+                   :yahtzee "Yahtzee!"
+                   :chance "Chance"})
 
 (defn all-dice []
   (filter some? (concat (:table-dice @state) (:held-dice @state))))
@@ -73,17 +73,26 @@
   (swap! state assoc-in [:scores name] {:score score :locked true})
   (game/next-round))
 
+;; -------------------------
+;; UI elements
+
 (defn score-row [name data calculated-score]
   (let [{:keys [score locked]} data]
-    [:div
-     [:p (get names name)
+    [:div {:class "table-row"}
+     [:div {:class "table-cell text-right border-b border-emerald-800 py-2 px-3"}
       (if (true? locked)
-        [:button {:disabled true} (str score)]
-        [:button {:on-click #(lock-score name calculated-score)} calculated-score])]]))
+        [:p {:class "text-emerald-200"} (get combinations name)]
+        [:p (get combinations name)])]
+     [:div {:class "table-cell border-b border-emerald-800"}
+      (if (or (true? locked)
+              (= 3 (:rolls @state)))
+        [:button {:class (str "w-full h-full py-2 px-3" (if locked " text-emerald-200" "")) :disabled true} (str score)]
+        [:button {:class "bg-emerald-500 text-slate-900 hover:bg-emerald-300 hover:cursor-pointer w-full h-full py-2 px-3"
+                  :on-click #(lock-score name calculated-score)} calculated-score])]]))
 
 (defn score-table []
   (let [score-state (:scores @state)]
-    [:div
+    [:div {:class "table"}
      [score-row :aces (:aces score-state) (sum-dice 1)]
      [score-row :twos (:twos score-state) (sum-dice 2)]
      [score-row :threes (:threes score-state) (sum-dice 3)]

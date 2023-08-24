@@ -20,10 +20,9 @@
   (swap! state update :round inc)
   (swap! state assoc :rolls 3))
 
+;; -------------------------
+;; UI elements
+
 (defn round-counter []
   [:div
    [:p (str "Round: " (:round @state))]])
-
-(defn roll-counter []
-  [:div
-   [:p (str "Rolls: " (:rolls @state))]])
