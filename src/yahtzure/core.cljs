@@ -3,7 +3,8 @@
    [reagent.dom :as d]
    [yahtzure.dice :as dice]
    [yahtzure.score :as score]
-   [yahtzure.game :as game]))
+   [yahtzure.game :as game]
+   [yahtzure.state :refer [state]]))
 
 ;; -------------------------
 ;; Views
@@ -17,7 +18,9 @@
    [:main {:class "max-w-6xl p-8 mx-auto"}
     [:div {:class "flex flex-col lg:flex-row justify-between gap-16"}
      [:div {:class "flex flex-col lg:w-2/3"}
-      [dice/roll-button]
+      (if (= 14 (:round @state))
+        [game/reset-button]
+        [dice/roll-button])
       [:section {:class "mt-5"}
        [:h2 {:class "mb-3"} "Table"]
        [dice/table-dice]]
