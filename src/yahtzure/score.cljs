@@ -24,6 +24,16 @@
   ([] (reduce + (all-dice)))
   ([value] (reduce + (filter #(= value %) (all-dice)))))
 
+(defn sum-upper-section
+  "Sum score table upper section"
+  []
+  (let [upper-section [:aces :twos :threes :fours :fives :sixes]
+        score-table (:scores @state)]
+    (reduce (fn [acc key]
+              (+ acc (:score (get score-table key 0))))
+            0
+            upper-section)))
+
 (defn partition-dice-by-value
   [] (->> (all-dice)
           (sort)
@@ -69,6 +79,20 @@
         partitions (partition 5 1 (->> (all-dice) sort dedupe))]
     (some #(some (partial = %) partitions) straights)))
 
+(defn upper-section-full?
+  "Check if all upper section scores are locked"
+  []
+  (let [upper-section [:aces :twos :threes :fours :fives :sixes]
+        score-table (:scores @state)]
+    (every? (fn [key]
+              (:locked (get score-table key)))
+            upper-section)))
+
+(defn upper-bonus?
+  "Check if we have 63 or more points in the score table upper section"
+  []
+  (<= 63 (sum-upper-section)))
+
 (defn lock-score [name score]
   (swap! state assoc-in [:scores name] {:score score :locked true})
   (game/next-round))
@@ -83,12 +107,25 @@
       (if (true? locked)
         [:p {:class "text-emerald-200"} (get combinations name)]
         [:p (get combinations name)])]
-     [:div {:class "table-cell border-b border-emerald-800"}
+     [:div {:class "table-cell w-20 text-center border-b border-emerald-800"}
       (if (or (true? locked)
               (= 3 (:rolls @state)))
-        [:button {:class (str "w-full h-full py-2 px-3" (if locked " text-emerald-200" "")) :disabled true} (str score)]
+        [:button {:class (str "py-2" (if locked " text-emerald-200" "")) :disabled true} (if (and (= score 0) locked)  "-" (str score))]
         [:button {:class "bg-emerald-500 text-slate-900 hover:bg-emerald-300 hover:cursor-pointer w-full h-full py-2 px-3"
-                  :on-click #(lock-score name calculated-score)} calculated-score])]]))
+                  :on-click #(lock-score name calculated-score)} (if (= calculated-score 0)  "-" (str calculated-score))])]]))
+
+(defn upper-bonus-row []
+  [:div {:class "table-row bg-slate-900"}
+   [:div {:class "table-cell text-right border-b border-emerald-800 py-2 px-3"}
+    [:p {:class "text-slate-500"} "Bonus"]]
+   [:div {:class "table-cell border-b border-emerald-800"}
+    (when (< 0 (sum-upper-section))
+      [:p {:class "text-center py-2 px-3"}
+       (if (upper-bonus?)
+         [:span {:class "text-emerald-200"} 35]
+         (if (upper-section-full?)
+           [:span {:class "text-slate-500"} "-"]
+           [:span {:class "text-slate-500"} (str "-" (- 63 (sum-upper-section)))]))])]])
 
 (defn score-table []
   (let [score-state (:scores @state)]
@@ -99,6 +136,7 @@
      [score-row :fours (:fours score-state) (sum-dice 4)]
      [score-row :fives (:fives score-state) (sum-dice 5)]
      [score-row :sixes (:sixes score-state) (sum-dice 6)]
+     [upper-bonus-row]
      [score-row :three-of-a-kind (:three-of-a-kind score-state) (if (three-of-a-kind?) (sum-dice) 0)]
      [score-row :four-of-a-kind (:four-of-a-kind score-state) (if (four-of-a-kind?) (sum-dice) 0)]
      [score-row :full-house (:full-house score-state) (if (full-house?) 25 0)]
