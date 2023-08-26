@@ -1,4 +1,4 @@
-{:source-paths ["src"]
+{:source-paths ["src", "test"]
  :dependencies [[binaryage/devtools "1.0.6"]
                 [nrepl "1.0.0"]
                 [cider/cider-nrepl "0.28.7"]
@@ -7,6 +7,9 @@
                       :output-dir "public/js"
                       :asset-path "/js"
                       :modules    {:app {:entries [yahtzure.core]}}
-                      :devtools   {:after-load yahtzure.core/mount-root}}}
+                      :devtools   {:after-load yahtzure.core/mount-root}}
+                :browser-test {:target :browser-test
+                               :test-dir "out/test"}}
 
- :dev-http     {3000 {:root "public"}}}
+ :dev-http     {3000 {:root "public"}
+                3001 "out/test"}}
