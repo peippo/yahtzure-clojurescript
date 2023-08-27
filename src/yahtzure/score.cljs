@@ -16,7 +16,9 @@
                    :yahtzee "Yahtzee!"
                    :chance "Chance"})
 
-(defn all-dice []
+(defn all-dice
+  "Return all the dice in play (table and held)"
+  []
   (filter some? (concat (:table-dice @state) (:held-dice @state))))
 
 (defn sum-dice
@@ -35,12 +37,15 @@
             upper-section)))
 
 (defn partition-dice-by-value
+  "Group dice by value, and sort the groups by count"
   [] (->> (all-dice)
           (sort)
           (partition-by identity)
           (sort-by count)))
 
-(defn has-n-of-kind? [n]
+(defn has-n-of-kind?
+  "Check if there are `n` of any value dice"
+  [n]
   (some #(>= (count %) n) (partition-dice-by-value)))
 
 (defn three-of-a-kind?
@@ -93,8 +98,15 @@
   []
   (<= 63 (sum-upper-section)))
 
-(defn lock-score [name score]
-  (swap! state assoc-in [:scores name] {:score score :locked true})
+(defn lock-score
+  "Add `score` to `name` combination and lock the row"
+  [name score]
+  (swap! state assoc-in [:scores name] {:score score :locked true}))
+
+(defn handle-score-click
+  "Lock selected score and move to next round"
+  [name score]
+  (lock-score name score)
   (game/next-round))
 
 ;; -------------------------
@@ -112,7 +124,7 @@
               (= 3 (:rolls @state)))
         [:button {:class (str "py-2" (if locked " text-emerald-200" "")) :disabled true} (if (and (= score 0) locked)  "-" (str score))]
         [:button {:class "bg-emerald-500 text-slate-900 hover:bg-emerald-300 hover:cursor-pointer w-full h-full py-2 px-3"
-                  :on-click #(lock-score name calculated-score)} (if (= calculated-score 0)  "-" (str calculated-score))])]]))
+                  :on-click #(handle-score-click name calculated-score)} (if (= calculated-score 0)  "-" (str calculated-score))])]]))
 
 (defn upper-bonus-row []
   [:div {:class "table-row bg-slate-900"}
