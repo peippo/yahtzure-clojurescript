@@ -32,10 +32,10 @@
   (let [current-round (:round @state)]
     [:div
      [:p (if (<= current-round 13)
-           (str "Round: " current-round)
+           (str "Round: " current-round "/13")
            (str "Game finished!"))]]))
 
 (defn reset-button []
   [:button {:on-click #(reset-game)
-            :class "bg-emerald-500 text-slate-900 hover:bg-emerald-300 hover:cursor-pointer p-3"}
+            :class "bg-emerald-500 text-slate-900 hover:bg-emerald-300 hover:cursor-pointer ease-out duration-100 p-3"}
    "New game"])

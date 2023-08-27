@@ -117,7 +117,7 @@
       (if (or (true? locked)
               (= 3 (:rolls @state)))
         [:button {:class (str "py-2" (if locked " text-emerald-200" "")) :disabled true} (if (and (= score 0) locked)  "-" (str score))]
-        [:button {:class "bg-emerald-500 text-slate-900 hover:bg-emerald-300 hover:cursor-pointer w-full h-full py-2 px-3"
+        [:button {:class "w-full h-full bg-emerald-500 text-slate-900 hover:bg-emerald-300 hover:cursor-pointer ease-out duration-200 py-2 px-3"
                   :on-click #(do (lock-score name calculated-score)
                                  (game/next-round))}
          (if (= calculated-score 0)  "-" (str calculated-score))])]]))
