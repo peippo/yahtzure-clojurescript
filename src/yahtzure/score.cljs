@@ -103,12 +103,6 @@
   [name score]
   (swap! state assoc-in [:scores name] {:score score :locked true}))
 
-(defn handle-score-click
-  "Lock selected score and move to next round"
-  [name score]
-  (lock-score name score)
-  (game/next-round))
-
 ;; -------------------------
 ;; UI elements
 
@@ -124,7 +118,9 @@
               (= 3 (:rolls @state)))
         [:button {:class (str "py-2" (if locked " text-emerald-200" "")) :disabled true} (if (and (= score 0) locked)  "-" (str score))]
         [:button {:class "bg-emerald-500 text-slate-900 hover:bg-emerald-300 hover:cursor-pointer w-full h-full py-2 px-3"
-                  :on-click #(handle-score-click name calculated-score)} (if (= calculated-score 0)  "-" (str calculated-score))])]]))
+                  :on-click #(do (lock-score name calculated-score)
+                                 (game/next-round))}
+         (if (= calculated-score 0)  "-" (str calculated-score))])]]))
 
 (defn upper-bonus-row []
   [:div {:class "table-row bg-slate-900"}
