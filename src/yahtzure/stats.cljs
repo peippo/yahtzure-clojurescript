@@ -41,7 +41,7 @@
       [:polyline {:points (get-polyline-points width height)
                   :class "stroke-emerald-500 fill-transparent"}]])
    (let [tick-classes "relative after:content-[''] after:absolute after:left-1/2 after:-top-4 after:w-[1px] after:h-2 after:bg-slate-500"]
-     [:div {:class "flex justify-between text-sm text-slate-500 mt-2"}
+     [:div {:class "flex justify-between text-xs md:text-sm text-slate-500 mt-2"}
       [:div {:class tick-classes} [:p "Aces"]]
       [:div {:class tick-classes} [:p "Twos"]]
       [:div {:class tick-classes} [:p "Threes"]]
