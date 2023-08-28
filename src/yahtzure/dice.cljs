@@ -1,6 +1,7 @@
 (ns yahtzure.dice
   (:require [yahtzure.state :refer [state]]
-            [yahtzure.game :as game]))
+            [yahtzure.game :as game]
+            [yahtzure.stats :as stats]))
 
 (defn roll-die [] (inc (rand-int 6)))
 (defn roll-dice [count] (repeatedly count roll-die))
@@ -75,5 +76,6 @@
                            "bg-emerald-500 text-slate-900 hover:bg-emerald-300 hover:cursor-pointer ease-out duration-200 p-3"))
              :value (if (= 3 (:rolls @state)) "Roll" (str "Re-roll (" (:rolls @state) ")"))
              :disabled disabled
-             :on-click #(do ((swap! state roll-dice!)
-                             (game/dec-roll)))}]))
+             :on-click #(do (swap! state roll-dice!)
+                            (game/dec-roll)
+                            (stats/log-stats!))}]))

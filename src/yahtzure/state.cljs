@@ -5,6 +5,7 @@
                     :rolls 3
                     :table-dice [nil nil nil nil nil]
                     :held-dice [nil nil nil nil nil]
+                    :stats {:1 0 :2 0 :3 0 :4 0 :5 0 :6 0}
                     :scores {:aces {:score 0 :locked false}
                              :twos {:score 0 :locked false}
                              :threes {:score 0 :locked false}
