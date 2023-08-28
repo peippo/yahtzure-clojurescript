@@ -13,14 +13,12 @@
 		"react-dom": "^17.0.2"
 	},
 	"scripts": {
-		"shadow:watch": "npx shadow-cljs watch app",
+		"shadow:watch": "npx shadow-cljs watch app browser-test",
 		"shadow:release": "npx shadow-cljs release app",
 		"postcss:build": "postcss src/css/tailwind.css -o ./public/css/main.css --verbose",
 		"postcss:watch": "postcss src/css/tailwind.css -o ./public/css/main.css --verbose -w",
 		"postcss:release": "NODE_ENV=production postcss src/css/tailwind.css -o ./public/css/main.css --verbose",
-		"test:watch": "npx shadow-cljs watch browser-test",
 		"dev": "run-p -l *:watch",
-		"release": "run-s *:release",
-		"test": "run-s *:test"
+		"release": "run-s *:release"
 	}
 }
