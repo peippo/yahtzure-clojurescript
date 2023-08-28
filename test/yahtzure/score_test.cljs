@@ -22,6 +22,23 @@
                                       :sixes {:score 18 :locked true}}})]
     (is (= 63 (score/sum-upper-section)))))
 
+(deftest test-sum-total-score
+  (with-redefs [state (atom {:scores {:aces {:score 3 :locked true}
+                                      :twos {:score 6 :locked true}
+                                      :threes {:score 9 :locked true}
+                                      :fours {:score 12 :locked true}
+                                      :fives {:score 15 :locked true}
+                                      :sixes {:score 18 :locked true}
+                                      :upper-bonus {:score 35 :locked true}
+                                      :three-of-a-kind {:score 30 :locked true}
+                                      :four-of-a-kind {:score 30 :locked true}
+                                      :full-house {:score 25 :locked true}
+                                      :small-straight {:score 30 :locked true}
+                                      :large-straight {:score 40 :locked true}
+                                      :yahtzee {:score 50 :locked true}
+                                      :chance {:score 30 :locked true}}})]
+    (is (= 333 (score/sum-total-score)))))
+
 (deftest test-partition-dice-by-value
   (with-redefs [state (atom {:table-dice [1 1 2 nil nil]
                              :held-dice [nil nil nil 2 2]})]

@@ -26,6 +26,15 @@
   ([] (reduce + (all-dice)))
   ([value] (reduce + (filter #(= value %) (all-dice)))))
 
+(defn sum-total-score
+  "Sum all score rows"
+  []
+  (let [scores (:scores @state)]
+    (reduce (fn [acc {score :score}]
+              (+ acc score))
+            0
+            (vals scores))))
+
 (defn sum-upper-section
   "Sum score table upper section"
   []
@@ -42,6 +51,11 @@
           (sort)
           (partition-by identity)
           (sort-by count)))
+
+(defn lock-score
+  "Add `score` to `name` combination and lock the row"
+  [name score]
+  (swap! state assoc-in [:scores name] {:score score :locked true}))
 
 (defn has-n-of-kind?
   "Check if there are `n` of any value dice"
@@ -94,14 +108,14 @@
             upper-section)))
 
 (defn upper-bonus?
-  "Check if we have 63 or more points in the score table upper section"
+  "Check if we have 63 or more points in the score table upper section,
+   update the locked score accordingly"
   []
-  (<= 63 (sum-upper-section)))
-
-(defn lock-score
-  "Add `score` to `name` combination and lock the row"
-  [name score]
-  (swap! state assoc-in [:scores name] {:score score :locked true}))
+  (let [upper-bonus? (<= 63 (sum-upper-section))]
+    (if upper-bonus?
+      (lock-score :upper-bonus 35)
+      (lock-score :upper-bonus 0))
+    upper-bonus?))
 
 ;; -------------------------
 ;; UI elements
@@ -123,10 +137,10 @@
          (if (= calculated-score 0)  "-" (str calculated-score))])]]))
 
 (defn upper-bonus-row []
-  [:div {:class "table-row bg-slate-900"}
-   [:div {:class "table-cell text-right border-b border-emerald-800 py-2 px-3"}
+  [:div {:class "table-row"}
+   [:div {:class "table-cell text-right border-t border-emerald-500 py-2 px-3"}
     [:p {:class "text-slate-500"} "Bonus"]]
-   [:div {:class "table-cell border-b border-emerald-800"}
+   [:div {:class "table-cell border-t border-emerald-500"}
     (when (< 0 (sum-upper-section))
       [:p {:class "text-center py-2 px-3"}
        (if (upper-bonus?)
@@ -135,9 +149,16 @@
            [:span {:class "text-slate-500"} "-"]
            [:span {:class "text-slate-500"} (str "-" (- 63 (sum-upper-section)))]))])]])
 
+(defn total-row []
+  [:div {:class "table-row"}
+   [:div {:class "table-cell text-right border-t-2 border-emerald-400 px-3"}
+    [:p {:class "text-lg text-emerald-200 mt-3"} "Total"]]
+   [:div {:class "table-cell text-center text-lg text-emerald-200 border-t-2 border-emerald-400 mt-3"}
+    (sum-total-score)]])
+
 (defn score-table []
   (let [score-state (:scores @state)]
-    [:div {:class "table"}
+    [:div {:class "table bg-gradient-to-t from-slate-700/25 to-transparent p-5 rounded-lg"}
      [score-row :aces (:aces score-state) (sum-dice 1)]
      [score-row :twos (:twos score-state) (sum-dice 2)]
      [score-row :threes (:threes score-state) (sum-dice 3)]
@@ -151,4 +172,5 @@
      [score-row :small-straight (:small-straight score-state) (if (small-straight?) 30 0)]
      [score-row :large-straight (:large-straight score-state) (if (large-straight?) 40 0)]
      [score-row :yahtzee (:yahtzee score-state) (if (yahtzee?) 50 0)]
-     [score-row :chance (:chance score-state) (sum-dice)]]))
+     [score-row :chance (:chance score-state) (sum-dice)]
+     [total-row]]))
