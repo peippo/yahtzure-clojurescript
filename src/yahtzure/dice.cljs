@@ -13,6 +13,7 @@
     (swap! state
            (fn [state]
              (-> state
+                 (assoc :animate-spin false)
                  (update :table-dice assoc index nil)
                  (update :held-dice assoc index die-value))))))
 
@@ -23,6 +24,7 @@
     (swap! state
            (fn [state]
              (-> state
+                 (assoc :animate-spin false)
                  (update :table-dice assoc index die-value)
                  (update :held-dice assoc index nil))))))
 
@@ -36,11 +38,12 @@
                                   (and (empty? (filter some? (:table-dice old-state))) (< held-count 5)))
                           index))
                       (:table-dice old-state))
-        rolls (vec (roll-dice (count dice-indices)))]
+        rolls (vec (roll-dice (count dice-indices)))
+        initial-state (assoc old-state :animate-spin true)]
     (reduce
      (fn [state [index roll]]
        (assoc-in state [:table-dice index] roll))
-     old-state
+     initial-state
      (map vector dice-indices rolls))))
 
 ;; -------------------------
@@ -53,11 +56,13 @@
 
 (defn table-dice []
   [:ul {:class "grid grid-cols-5 gap-2"}
-   (for [[index value] (map-indexed vector (:table-dice @state))]
-     ^{:key (str index "-" (or value "nil"))}
-     [:li {:class dice-slot-classes}
-      (when (not (nil? value))
-        [:button {:class dice-classes :on-click #(hold-die index)} [:span {:class "relative z-10"} (str value)]])])])
+   (doall (for [[index value] (map-indexed vector (:table-dice @state))]
+            ^{:key (str index "-" (or value "nil") "-" (:rolls @state))}
+            [:li {:class dice-slot-classes}
+             (when (not (nil? value))
+               [:button {:class (str dice-classes
+                                     (when (:animate-spin @state) (str " animate-spin-" value)))
+                         :on-click #(hold-die index)} [:span {:class "relative z-10"} (str value)]])]))])
 
 (defn held-dice []
   [:ul {:class "grid grid-cols-5 gap-2"}

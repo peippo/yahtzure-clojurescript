@@ -19,6 +19,7 @@
                              :small-straight {:score 0 :locked false}
                              :large-straight {:score 0 :locked false}
                              :yahtzee {:score 0 :locked false}
-                             :chance {:score 0 :locked false}}})
+                             :chance {:score 0 :locked false}}
+                    :animate-spin true})
 
 (defonce state (r/atom initial-state))

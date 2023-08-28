@@ -8,4 +8,56 @@
 		@apply bg-slate-800;
 		@apply text-slate-300;
 	}
+
+	@keyframes fade {
+		from {
+			opacity: 0.3;
+			filter: blur(6px);
+		}
+
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes spin {
+		from {
+			transform: rotate(0deg);
+			filter: blur(3px);
+		}
+
+		to {
+			transform: rotate(360deg);
+		}
+	}
+}
+
+.animate-spin-1,
+.animate-spin-4 {
+	animation: spin 0.4s ease-in-out;
+}
+
+.animate-spin-1 span,
+.animate-spin-4 span {
+	animation: fade 0.4s ease-in-out;
+}
+
+.animate-spin-2,
+.animate-spin-5 {
+	animation: spin 0.5s ease-in-out;
+}
+
+.animate-spin-2 span,
+.animate-spin-5 span {
+	animation: fade 0.5s ease-in-out;
+}
+
+.animate-spin-3,
+.animate-spin-6 {
+	animation: spin 0.6s ease-in-out;
+}
+
+.animate-spin-3 span,
+.animate-spin-6 span {
+	animation: fade 0.6s ease-in-out;
 }
