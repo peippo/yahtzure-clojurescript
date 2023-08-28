@@ -18,7 +18,8 @@
                              :held-dice [nil nil nil nil nil]})]
     (dice/hold-die 0)
     (is (= {:table-dice [nil 2 3 4 5]
-            :held-dice [1 nil nil nil nil]}
+            :held-dice [1 nil nil nil nil]
+            :animate-spin false}
            @state))))
 
 (deftest test-return-die
@@ -26,7 +27,8 @@
                              :held-dice [1 nil nil nil nil]})]
     (dice/return-die 0)
     (is (= {:table-dice [1 2 3 4 5]
-            :held-dice [nil nil nil nil nil]}
+            :held-dice [nil nil nil nil nil]
+            :animate-spin false}
            @state))))
 
 (deftest test-roll-dice!
